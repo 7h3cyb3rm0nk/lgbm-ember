@@ -80,7 +80,7 @@ def get_exe_file_paths(
                     logger.warning(f"permission denied accessing {subdir}")
             elif subdir.is_file() and subdir.suffix.lower() == ".exe":
                 sha256_hash = get_sha256_hash(subdir)
-                exe_paths.append((subdir, sha256_hash))
+                exe_paths.append((subdir, sha256_hash, subdir.parent.stem))
 
         return exe_paths
 
@@ -99,7 +99,7 @@ def create_malware_metadata(
     exclude: Union[List[str], None] = None
     ):
     """
-    write metadata (name, sha256, label) of malware exes into a csv file
+    write metadata (file_path, sha256, avclass, label) of malware exes into a csv file
     Args:
         path: Root path containing subdirectories which contain malware files
         include: directory names to only include
@@ -120,8 +120,8 @@ def create_malware_metadata(
         with open(f"{output_dir}/malware_metadata.csv", "w", newline='') as csvfile:
             logger.debug(f"opening {output_dir}/malware_metadata.csv")
             writer = csv.writer(csvfile)
-            rows = [(file_path, sha256_hash, 1) for file_path, sha256_hash in malware_file_paths ]
-            writer.writerow(["name","sha256", "label"])
+            rows = [(file_path, sha256_hash, avclass, 1) for file_path, sha256_hash, avclass in malware_file_paths ]
+            writer.writerow(["file_path","sha256", "avclass" "label"])
             writer.writerows(rows)
             logger.debug(f"wrote {len(rows)} to {output_dir}/malware_metadata.csv")
     except FileNotFoundError as e:
@@ -145,7 +145,7 @@ def create_benign_metadata(
     exclude: Union[List[str], None] = None
     ):
     """
-    write metadata (name, sha256, label) of benign exes into a csv file
+    write metadata (file_path, sha256, avclass, label) of benign exes into a csv file
     Args:
         path: Root path containing subdirectories which contain benign files
         include: directory names to only include
@@ -166,8 +166,8 @@ def create_benign_metadata(
         with open(f"{output_dir}/benign_metadata.csv", "w", newline='') as csvfile:
             logger.debug(f"opening {output_dir}/benign_metadata.csv")
             writer = csv.writer(csvfile)
-            rows = [(file_path, sha256_hash, 0) for file_path, sha256_hash in benign_file_paths ]
-            writer.writerow(["name","sha256", "label"])
+            rows = [(file_path, sha256_hash,avclass, 0) for file_path, sha256_hash, avclass in benign_file_paths ]
+            writer.writerow(["file_path","sha256", "avclass", "label"])
             writer.writerows(rows)
             logger.debug(f"wrote {len(rows)} to benign_metadata.csv")
     except FileNotFoundError as e:
@@ -199,9 +199,9 @@ def create_metadata_csv(path: str, benign_path_name: str):
         with open(f"{output_dir}/metadata.csv", "w", newline='') as csvfile:
             logger.debug(f"opening {output_dir}/metadata.csv")
             writer = csv.writer(csvfile)
-            malware_rows = [(file_path, sha256_hash, 1) for file_path, sha256_hash in malware_file_paths ]
-            benign_rows = [(file_path, sha256_hash, 0) for file_path, sha256_hash in benign_file_paths]
-            writer.writerow(["name","sha256", "label"])
+            malware_rows = [(file_path, sha256_hash, avclass, 1) for file_path, sha256_hash, avclass in malware_file_paths ]
+            benign_rows = [(file_path, sha256_hash, avclass, 0) for file_path, sha256_hash, avclass in benign_file_paths]
+            writer.writerow(["file_path","sha256", "avclass", "label"])
             
             writer.writerows(malware_rows)
             writer.writerows(benign_rows)
