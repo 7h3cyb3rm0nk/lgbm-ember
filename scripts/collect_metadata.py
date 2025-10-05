@@ -121,7 +121,7 @@ def create_malware_metadata(
             logger.debug(f"opening {output_dir}/malware_metadata.csv")
             writer = csv.writer(csvfile)
             rows = [(file_path, sha256_hash, avclass, 1) for file_path, sha256_hash, avclass in malware_file_paths ]
-            writer.writerow(["file_path","sha256", "avclass" "label"])
+            writer.writerow(["file_path","sha256", "avclass", "label"])
             writer.writerows(rows)
             logger.debug(f"wrote {len(rows)} to {output_dir}/malware_metadata.csv")
     except FileNotFoundError as e:
